@@ -29,6 +29,7 @@
 #let birth-icon = box(fa-icon("cake", fill: color-darknight))
 #let homepage-icon = box(fa-icon("home", fill: color-darknight))
 #let website-icon = box(fa-icon("globe", fill: color-darknight))
+#let wechat-icon = box(fa-icon("weixin", fill: color-darknight))
 
 /// Helpers
 
@@ -103,7 +104,7 @@
         #author.firstname#sym.space#author.lastname
       ]
       #sym.dot.c
-      #linguify("resume", from: lang_data)
+      #linguify("curriculum-vitae", from: lang_data)
     ]
   ][
     #context {
@@ -130,9 +131,9 @@
 
 /// Right section for the justified headers
 /// - body (content): The body of the right header
-#let secondary-right-header(body) = {
+#let secondary-right-header(size, body) = {
   set text(
-    size: 11pt,
+    size: size,
     weight: "medium",
   )
   body
@@ -140,10 +141,10 @@
 
 /// Right section of a tertiaty headers.
 /// - body (content): The body of the right header
-#let tertiary-right-header(body) = {
+#let tertiary-right-header(size, body) = {
   set text(
     weight: "light",
-    size: 9pt,
+    size: size,
   )
   body
 }
@@ -151,30 +152,69 @@
 /// Justified header that takes a primary section and a secondary section. The primary section is on the left and the secondary section is on the right.
 /// - primary (content): The primary section of the header
 /// - secondary (content): The secondary section of the header
-#let justified-header(primary, secondary) = {
+#let justified-header(size, primary, secondary) = {
   set block(
     above: 0.7em,
     below: 0.7em,
   )
+  set text(size: size)
+  let rsize = size - 1pt
+  show heading.where(level: 2): it => {
+    set text(
+      color-darkgray,
+      size: size,
+      style: "normal",
+      weight: "bold",
+    )
+    it.body
+  }
+
+
   pad[
     #__justify_align[
       == #primary
     ][
-      #secondary-right-header[#secondary]
+      #secondary-right-header(rsize)[#secondary]
     ]
   ]
+  show heading.where(level: 2): it => {
+    set text(
+      color-darkgray,
+      size: 12pt,
+      style: "normal",
+      weight: "bold",
+    )
+    it.body
+  }
 }
 
 /// Justified header that takes a primary section and a secondary section. The primary section is on the left and the secondary section is on the right. This is a smaller header compared to the `justified-header`.
 /// - primary (content): The primary section of the header
 /// - secondary (content): The secondary section of the header
-#let secondary-justified-header(primary, secondary) = {
+#let secondary-justified-header(size, primary, secondary) = {
+  set text(size: size)
+  let rsize = size - 1pt
+  show heading.where(level: 3): it => {
+    set text(
+      size: size,
+      weight: "regular",
+    )
+    smallcaps[#it.body]
+  }
   __justify_align[
     === #primary
   ][
-    #tertiary-right-header[#secondary]
+    #tertiary-right-header(rsize)[#secondary]
   ]
+    show heading.where(level: 3): it => {
+    set text(
+      size: 10pt,
+      weight: "regular",
+    )
+    smallcaps[#it.body]
+  }
 }
+
 /// --- End of Helpers
 
 /// ---- Resume Template ----
@@ -197,7 +237,7 @@
   colored-headers: true,
   show-footer: true,
   language: "en",
-  font: ("Source Sans Pro", "Source Sans 3"),
+  font: ("Source Sans 3"),
   header-font: ("Roboto"),
   body,
 ) = {
@@ -365,7 +405,7 @@
           #if ("github" in author) [
             #separator
             #github-icon
-            #box[#link("https://github.com/" + author.github)[#author.github]]
+            #box[#link("https://github.com/" + author.github)[Github]]
           ]
           #if ("linkedin" in author) [
             #separator
@@ -383,7 +423,7 @@
             #let fullname = str(author.firstname + " " + author.lastname)
             #separator
             #google-scholar-icon
-            #box[#link("https://scholar.google.com/citations?user=" + author.scholar)[#fullname]]
+            #box[#link("https://scholar.google.com/citations?user=" + author.scholar)[Google Scholar]]
           ]
           #if ("orcid" in author) [
             #separator
@@ -395,6 +435,12 @@
             #website-icon
             #box[#link(author.website)[#author.website]]
           ]
+          #if ("wechat" in author) [
+            #separator
+            #wechat-icon
+            #box[#link(author.wechat)[(WeChat QR Code)]]
+          ]
+
         ]
       ]
     ]
@@ -439,6 +485,34 @@
   title: none,
   location: "",
   date: "",
+  description: "",
+  title-link: none,
+  accent-color: default-accent-color,
+  location-color: default-location-color,
+  psize: 12pt,
+  ssize: 10pt,
+) = {
+  let title-content
+  if type(title-link) == "string" {
+    title-content = link(title-link)[#title]
+  } else {
+    title-content = title
+  }
+  block(above: 1em, below: 0.65em)[
+    #pad[
+      #justified-header(psize, title-content, location)
+      #if description != "" or date != "" [
+        #secondary-justified-header(ssize, description, date)
+      ]
+    ]
+  ]
+}
+
+///Publications entry for the resume.
+#let resume-pub(
+  title: none,
+  journal: "",
+  year: "",
   description: "",
   title-link: none,
   accent-color: default-accent-color,
