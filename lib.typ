@@ -224,6 +224,7 @@
 /// The original template: https://github.com/posquit0/Awesome-CV
 ///
 /// - author (content): Structure that takes in all the author's information
+/// - profile-picture (image): The profile picture of the author. This will be cropped to a circle and should be square in nature.
 /// - date (string): The date the resume was created
 /// - accent-color (color): The accent color of the resume
 /// - colored-headers (boolean): Whether the headers should be colored or not
@@ -232,6 +233,7 @@
 /// -> none
 #let resume(
   author: (:),
+  profile-picture: image,
   date: datetime.today().display("[month repr:long] [day], [year]"),
   accent-color: default-accent-color,
   colored-headers: true,
@@ -239,6 +241,7 @@
   language: "en",
   font: ("Source Sans 3"),
   header-font: ("Roboto"),
+  paper-size: "a4",
   body,
 ) = {
   if type(accent-color) == "string" {
@@ -264,7 +267,7 @@
   )
   
   set page(
-    paper: "a4",
+    paper: paper-size,
     margin: (left: 15mm, right: 15mm, top: 10mm, bottom: 10mm),
     footer: if show-footer [#__resume_footer(
         author,
@@ -298,7 +301,7 @@
     } else {
       color-darkgray
     }
-    #text[#strong[#text(color)[#it.body.text]]]
+    #text[#strong[#text(color)[#it.body]]]
     #box(width: 1fr, line(length: 100%))
   ]
   
@@ -446,11 +449,37 @@
     ]
   }
   
-  name
-  positions
-  address
-  contacts
+  if profile-picture != none {
+    grid(
+      columns: (100% - 4cm, 4cm),
+      rows: (100pt),
+      gutter: 10pt,
+      [
+        #name
+        #positions
+        #address
+        #contacts
+      ],
+      align(left + horizon)[
+        #block(
+          clip: true,
+          stroke: 0pt,
+          radius: 2cm,
+          width: 4cm,
+          height: 4cm,
+          profile-picture,
+        )
+      ],
+    )
+  } else {
+    name
+    positions
+    address
+    contacts
+  }
+
   body
+
 }
 
 /// The base item for resume entries.
@@ -615,6 +644,7 @@
   font: ("Source Sans Pro", "Source Sans 3"),
   show-footer: true,
   closing: none,
+  paper-size: "a4",
   body,
 ) = {
   if type(accent-color) == "string" {
@@ -645,7 +675,7 @@
   )
   
   set page(
-    paper: "a4",
+    paper: paper-size,
     margin: (left: 15mm, right: 15mm, top: 10mm, bottom: 10mm),
     footer: if show-footer [#__coverletter_footer(
         author,
@@ -678,7 +708,7 @@
     )
     
     #align(left)[
-      #text[#strong[#text(accent-color)[#it.body.text]]]
+      #text[#strong[#text(accent-color)[#it.body]]]
       #box(width: 1fr, line(length: 100%))
     ]
   ]
@@ -820,7 +850,7 @@
         #text(weight: "light")[#linguify(
             "sincerely",
             from: lang_data,
-          )#sym.comma] \
+          )#if language != "de" [#sym.comma]] \
         #text(weight: "bold")[#author.firstname #author.lastname] \ \
       ]
     ]
@@ -868,7 +898,7 @@
   
   // TODO: Make this adaptable to content
   underline(evade: false, stroke: 0.5pt, offset: 0.3em)[
-    #text(weight: "bold", size: 12pt)[Job Application for #job-position]
+    #text(weight: "bold", size: 12pt)[#linguify("letter-position-pretext", from: lang_data) #job-position]
   ]
   pad(top: 1em, bottom: 1em)[
     #text(weight: "light", fill: color-gray)[

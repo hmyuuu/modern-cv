@@ -20,10 +20,12 @@
       "Developer",
     ),
   ),
+  profile-picture: none,
   date: datetime.today().display(),
   language: "en",
   colored-headers: true,
   show-footer: false,
+  paper-size: "us-letter",
 )
 
 = Experience
