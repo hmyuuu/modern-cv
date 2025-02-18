@@ -403,7 +403,7 @@
           #if ("homepage" in author) [
             #separator
             #homepage-icon
-            #box[#link(author.homepage)[#author.homepage]]
+            #box[#link(author.homepage)[Homepage]]
           ]
           #if ("github" in author) [
             #separator
@@ -487,7 +487,7 @@
 /// - body (content): The body of the resume entry
 #let resume-item(body) = {
   set text(
-    size: 10pt,
+    size: 11pt,
     style: "normal",
     weight: "light",
     fill: color-darknight,
@@ -518,7 +518,7 @@
   title-link: none,
   accent-color: default-accent-color,
   location-color: default-location-color,
-  psize: 12pt,
+  psize: 11pt,
   ssize: 10pt,
 ) = {
   let title-content
@@ -595,7 +595,7 @@
     #grid(
       columns: (20fr, 80fr),
       gutter: 10pt,
-      align(right)[
+      align(right + horizon)[
         #set text(hyphenate: false)
         == #category
       ],
@@ -617,7 +617,7 @@
 
 #let default-closing(lang_data) = {
   align(bottom)[
-    #text(weight: "light", style: "italic")[ #linguify(
+    #text(size:10pt, weight: "light", style: "italic")[ #linguify(
         "attached",
         from: lang_data,
       )#sym.colon #linguify("curriculum-vitae", from: lang_data)]
@@ -641,7 +641,7 @@
   date: datetime.today().display("[month repr:long] [day], [year]"),
   accent-color: default-accent-color,
   language: "en",
-  font: ("Source Sans Pro", "Source Sans 3"),
+  font: ("Source Sans 3"),
   show-footer: true,
   closing: none,
   paper-size: "a4",
@@ -807,6 +807,12 @@
       author_list.push[
         #website-icon
         #box[#link(author.website)[#author.website]]
+      ]
+    }
+    if ("wechat" in author) {
+        author_list.push[
+        #wechat-icon
+        #box[#link(author.wechat)[(WeChat QR Code)]]
       ]
     }
 
